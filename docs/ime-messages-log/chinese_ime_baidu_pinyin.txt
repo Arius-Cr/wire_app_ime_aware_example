@@ -1,0 +1,51 @@
+IME：百度拼音输入法 / Baidu Pinyin IME
+
+Version: 6.1.10.8
+
+Website: https://shurufa.baidu.com/
+
+Language: 中文 / Chinese
+
+Sample：夏天
+
+Key Order：x i a t i a n
+
+Log：
+
+===== KEY: [X] =====
+
+WM_KEYDOWN: "X" (0x58) [VK_PROCESSKEY]
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49) [VK_PROCESSKEY]
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+
+===== KEY: [T] =====
+
+WM_KEYDOWN: "T" (0x54) [VK_PROCESSKEY]
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49) [VK_PROCESSKEY]
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+
+===== KEY: [N] =====
+
+WM_KEYDOWN: "N" (0x4E) [VK_PROCESSKEY]
+
+===== KEY: [Space] =====
+
+WM_KEYDOWN: "Space" (0x20) [VK_PROCESSKEY]
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x800
+    GCS_RESULTSTR: [夏天]
+    GCS_RESULTCLAUSE
+WM_IME_ENDCOMPOSITION

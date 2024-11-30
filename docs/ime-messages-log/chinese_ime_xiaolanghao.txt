@@ -1,0 +1,62 @@
+IME：小狼毫输入法 / Weasel
+
+Version: 0.16.1.0
+
+Website: https://rime.im/
+
+Language: 中文 / Chinese
+
+Sample：夏天
+
+Key Order：x i a t i a n
+
+Log：
+
+===== KEY: [X] =====
+
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [ ]
+    GCS_CURSORPOS: 0
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [ ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+WM_KEYDOWN: "X" (0x58) [VK_PROCESSKEY]
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49) [VK_PROCESSKEY]
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+
+===== KEY: [T] =====
+
+WM_KEYDOWN: "T" (0x54) [VK_PROCESSKEY]
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49) [VK_PROCESSKEY]
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+
+===== KEY: [N] =====
+
+WM_KEYDOWN: "N" (0x4E) [VK_PROCESSKEY]
+
+===== KEY: [Space] =====
+
+WM_IME_COMPOSITION
+  lParam: 0x1C00
+    GCS_RESULTSTR: [夏天]
+    GCS_RESULTCLAUSE
+    GCS_RESULTREADCLAUSE
+WM_IME_ENDCOMPOSITION
+WM_KEYDOWN: "Space" (0x20) [VK_PROCESSKEY]

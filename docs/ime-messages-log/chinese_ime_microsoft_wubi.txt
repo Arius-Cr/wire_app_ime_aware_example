@@ -1,0 +1,109 @@
+IME：微软拼五笔输入法 / Microsoft Wubi IME
+
+Website: 
+https://support.microsoft.com/en-us/windows/microsoft-simplified-chinese-ime-9b962a3b-2fa4-4f37-811c-b1886320dd72#ID0EBD=Microsoft_Wubi
+https://learn.microsoft.com/en-us/globalization/input/simplified-chinese-ime
+
+Language: 中文 / Chinese
+
+Sample：夏天
+
+Key Order：d h t g d
+
+Log：
+
+===== KEY: [D] =====
+
+WM_KEYDOWN: "D" (0x44) [VK_PROCESSKEY]
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [d]
+    GCS_CURSORPOS: 1
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [d]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+
+===== KEY: [H] =====
+
+WM_KEYDOWN: "H" (0x48) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [dh]
+    GCS_CURSORPOS: 2
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 2
+      [00]: ATTR_INPUT [d]
+      [01]: ATTR_INPUT [h]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 2
+
+===== KEY: [T] =====
+
+WM_KEYDOWN: "T" (0x54) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [dht]
+    GCS_CURSORPOS: 3
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 3
+      [00]: ATTR_INPUT [d]
+      [01]: ATTR_INPUT [h]
+      [02]: ATTR_INPUT [t]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 3
+
+===== KEY: [Space] =====
+
+WM_KEYDOWN: "Space" (0x20) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1C00
+    GCS_RESULTSTR: [夏]
+    GCS_RESULTCLAUSE
+    GCS_RESULTREADCLAUSE
+WM_IME_ENDCOMPOSITION
+
+===== KEY: [G] =====
+
+WM_KEYDOWN: "G" (0x47) [VK_PROCESSKEY]
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [g]
+    GCS_CURSORPOS: 1
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [g]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+
+===== KEY: [D] =====
+
+WM_KEYDOWN: "D" (0x44) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [gd]
+    GCS_CURSORPOS: 2
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 2
+      [00]: ATTR_INPUT [g]
+      [01]: ATTR_INPUT [d]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 2
+
+===== KEY: [Space] =====
+
+WM_KEYDOWN: "Space" (0x20) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1C00
+    GCS_RESULTSTR: [天]
+    GCS_RESULTCLAUSE
+    GCS_RESULTREADCLAUSE
+WM_IME_ENDCOMPOSITION

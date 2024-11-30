@@ -1,0 +1,62 @@
+IME：华宇拼音输入法 / Huayu Pinyin IME
+
+Version: 7.3.0.299
+
+Website: https://pinyin.thunisoft.com/
+
+Language: 中文 / Chinese
+
+Sample：夏天
+
+Key Order：x i a t i a n
+
+Log：
+
+===== KEY: [X] =====
+
+WM_KEYDOWN: "X" (0x58)
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x1B8
+    GCS_COMPSTR: [ ]
+    GCS_CURSORPOS: 0
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [ ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49)
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41)
+
+===== KEY: [T] =====
+
+WM_KEYDOWN: "T" (0x54)
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49)
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41)
+
+===== KEY: [N] =====
+
+WM_KEYDOWN: "N" (0x4E)
+
+===== KEY: [Space] =====
+
+WM_KEYDOWN: "Space" (0x20)
+WM_IME_COMPOSITION
+  lParam: 0x1C00
+    GCS_RESULTSTR: [夏天]
+    GCS_RESULTCLAUSE
+    GCS_RESULTREADCLAUSE
+WM_IME_ENDCOMPOSITION

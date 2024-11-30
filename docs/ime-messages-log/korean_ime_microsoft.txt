@@ -1,0 +1,84 @@
+IME：微软朝鲜语输入法 / Microsoft Korean IME
+
+Website: 
+https://learn.microsoft.com/en-us/globalization/input/korean-ime
+
+Language: 朝鲜语 / Korean
+
+Sample：여름 (ㅇㅕㄹㅡㅁ)
+
+Key Order：d u f m a
+
+Log：
+
+===== KEY: [D] =====
+
+WM_KEYDOWN: "D" (0x44) [VK_PROCESSKEY]
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x6018
+    GCS_COMPSTR: [ㅇ]
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [ㅇ]
+    CS_INSERTCHAR
+    CS_NOMOVECARET
+
+===== KEY: [U] =====
+
+WM_KEYDOWN: "U" (0x55) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x6018
+    GCS_COMPSTR: [여]
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [여]
+    CS_INSERTCHAR
+    CS_NOMOVECARET
+
+===== KEY: [F] =====
+
+WM_KEYDOWN: "F" (0x46) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x6018
+    GCS_COMPSTR: [열]
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [열]
+    CS_INSERTCHAR
+    CS_NOMOVECARET
+
+===== KEY: [M] =====
+
+WM_KEYDOWN: "M" (0x4D) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x800
+    GCS_RESULTSTR: [여]
+    GCS_RESULTCLAUSE
+WM_IME_ENDCOMPOSITION
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x6018
+    GCS_COMPSTR: [르]
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [르]
+    CS_INSERTCHAR
+    CS_NOMOVECARET
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x6018
+    GCS_COMPSTR: [름]
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [름]
+    CS_INSERTCHAR
+    CS_NOMOVECARET
+
+===== KEY: [Space] =====
+
+WM_IME_COMPOSITION
+  lParam: 0x800
+    GCS_RESULTSTR: [름]
+    GCS_RESULTCLAUSE
+WM_IME_ENDCOMPOSITION
+WM_KEYDOWN: "Space" (0x20)
+WM_CHAR: [ ]

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|x64">
+            <Configuration>Debug</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|x64">
+            <Configuration>Release</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+    <!-- 🔻 自定内容 -->
+
+    <PropertyGroup Label="Configuration">
+        <!-- VS2015 ToolsVersion="14.0" PlatformToolset v140-->
+        <!-- VS2017 ToolsVersion="15.0" PlatformToolset v141-->
+        <!-- VS2019 ToolsVersion="16.0" PlatformToolset v142-->
+        <!-- VS2022 ToolsVersion="17.0" PlatformToolset v143-->
+
+        <!-- VS2022, change to your own VS Toolset version -->
+        <PlatformToolset>v143</PlatformToolset>
+        <!-- Windows SDK, change to your own Windows SDK version -->
+        <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+        
+        <ConfigurationType>Application</ConfigurationType>
+        <TargetName>ImmPad</TargetName>
+        <TargetExt>.exe</TargetExt>
+        <IntDir>.\build\objs\$(Platform)\$(Configuration)\</IntDir>
+        <OutDir>.\build\$(Platform)\$(Configuration)\</OutDir>
+    </PropertyGroup>
+
+    <!-- 🔺 自定内容 -->
+
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+    <!-- 🔻 自定内容 -->
+
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <!-- https://learn.microsoft.com/zh-cn/visualstudio/msbuild/cl-task -->
+            <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+            <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DEBUG;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <ObjectFileName>$(IntDir)</ObjectFileName>
+            <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+        <ResourceCompile>
+            <!-- https://docs.microsoft.com/zh-cn/visualstudio/msbuild/rc-task -->
+            <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DEBUG;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        </ResourceCompile>
+        <Link>
+            <!-- https://docs.microsoft.com/zh-cn/visualstudio/msbuild/link-task -->
+            <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+            <LinkIncremental>True</LinkIncremental>
+            <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);lib</AdditionalLibraryDirectories>
+            <AdditionalDependencies>%(AdditionalDependencies);Imm32.lib</AdditionalDependencies>
+            <SubSystem>Windows</SubSystem>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <ItemGroup>
+        <ClCompile Include="main.cpp" />
+        <ClCompile Include="text_editor.cpp" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ClInclude Include="private.h" />
+        
+        <ClInclude Include="main.h" />
+        <ClInclude Include="text_editor.h" />
+    </ItemGroup>
+
+    <Target Name="Message" BeforeTargets="Build">
+        <Message Text="Project File Name = $(TargetName)" />
+        <Message Text="Project Dir = $(MSBuildProjectDirectory)" />
+    </Target>
+
+    <!-- 🔺 自定内容 -->
+
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
