@@ -48,6 +48,7 @@ public:
     LRESULT OnSetFocus(WPARAM wParam, LPARAM lParam);
     LRESULT OnKillFocus(WPARAM wParam, LPARAM lParam);
     LRESULT OnKeyDown(WPARAM wParam, LPARAM lParam);
+    LRESULT OnKeyUp(WPARAM wParam, LPARAM lParam);
     LRESULT OnChar(WPARAM wParam, LPARAM lParam);
     LRESULT OnIMECompositionStart(WPARAM wParam, LPARAM lParam);
     LRESULT OnIMEComposition(WPARAM wParam, LPARAM lParam);
@@ -70,12 +71,11 @@ public:
 private:
     HWND m_hwnd;
 
-    // 合成文本数据
+    /* 合成字符串数据 */
+    /* Composition string datas */
 
     WCHAR *m_comp_str;
     UINT m_comp_str_size_e;
-
-    UINT m_comp_cursor_pos;
 
     BYTE *m_comp_attrs;
     UINT m_comp_attrs_size_e;
@@ -83,10 +83,18 @@ private:
     LONG *m_comp_clauses;
     UINT m_comp_clauses_size_e;
 
+    /* 合成字符串光标的位置 */
+    /* the position of the composition cursor in composition string */
+    UINT m_comp_cursor_pos;
+
+    /* 合成字符串在文本中的位置 */
+    /* the position of the composition string in text */
     UINT m_comp_start_pos;
     UINT m_comp_end_pos;
 
-    // 文本数据
+
+    /* 文本数据 */
+    /* Text for editing */
 
     WCHAR *m_text;
     UINT m_text_size;
@@ -95,7 +103,9 @@ private:
     UINT m_cursor_line;
     UINT m_cursor_column;
 
-    // 布局数据
+
+    /* 布局数据 */
+    /* UI Layout datas */
 
     LOGFONT m_font;
 

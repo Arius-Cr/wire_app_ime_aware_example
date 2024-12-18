@@ -23,7 +23,10 @@ TextEditor::TextEditor()
     m_comp_clauses = NULL;
     m_comp_clauses_size_e = 0;
 
-    m_comp_cursor_pos = -1;
+    m_comp_cursor_pos = 0;
+
+    m_comp_start_pos = 0;
+    m_comp_end_pos = 0;
 
     m_text = (WCHAR *)malloc(sizeof(WCHAR) * (TEXT_SIZE_MAX + 1));
     memset(m_text, 0, sizeof(WCHAR) * (TEXT_SIZE_MAX + 1));
@@ -140,11 +143,28 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
          *   小键盘上的 "/" 键，对应的扫描码为 0xE035，虚拟按键为 VK_DIVIDE。
          * 传递给 ToUnicodeEx() 函数时，wScanCode 参数都应该传递 0x0035。
          * 即：
-         *    ToUnicodeEx(VK_OEM_2, 0x0035, ...) [SUCCESS]
-         *    ToUnicodeEx(VK_DIVIDE, 0x0035, ...) [SUCCESS]
+         *    ToUnicodeEx(VK_OEM_2,  0x0035, ...) [SUCCEEDED]
+         *    ToUnicodeEx(VK_DIVIDE, 0x0035, ...) [SUCCEEDED]
          *    ToUnicodeEx(VK_DIVIDE, 0xE035, ...) [FAILED]
          *
          * 参考：https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-tounicodeex
+         */
+        /**
+         * The following code has nothing to do with IME and is only for reference.
+         * If your program uses ToUnicodeEx to obtain the characters corresponding to the keys,
+         * it should be noted that the second parameter wScanCode cannot contain extended-keys flag.
+         * For example:
+         *     The "/" key on the main keyboard corresponds to the scan code 0x0035,
+         *     and the virtual key is VK_OEM2.
+         *     The "/" key on the numpad corresponds to the scan code 0xE035,
+         *     and the virtual key is VK_DIVIDE.
+         * When passing to the ToUnicodeEx function, the wScanCode parameter should be passed with 0x0035.
+         * i.e.
+         *    ToUnicodeEx(VK_OEM_2,  0x0035, ...) [SUCCEEDED]
+         *    ToUnicodeEx(VK_DIVIDE, 0x0035, ...) [SUCCEEDED]
+         *    ToUnicodeEx(VK_DIVIDE, 0xE035, ...) [FAILED]
+         * Reference:
+         * https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-tounicodeex
          */
         RAWINPUT raw;
         RAWINPUT *raw_ptr = &raw;
@@ -164,6 +184,7 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
                 printc(CCFY "  MakeCode: 0x%X %s", raw.data.keyboard.MakeCode,
                        raw.data.keyboard.Flags & RI_KEY_E0 ? "(Extend)" : "");
                 printc(CCFY "  Flags: 0x%X", raw.data.keyboard.Flags);
+                printc(CCFY "  GetKeyState(vk) [repeated]: %s", (GetKeyState(raw.data.keyboard.VKey) & 0x80) ? "True" : "False");
 
                 WCHAR charactor = MapVirtualKeyW(raw.data.keyboard.VKey, MAPVK_VK_TO_CHAR);
                 switch (charactor)
@@ -197,11 +218,19 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
     break;
 
     case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
     {
-
         ptic = GetThis(hWnd);
         if (ptic)
             return ptic->OnKeyDown(wParam, lParam);
+    }
+    break;
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+    {
+        ptic = GetThis(hWnd);
+        if (ptic)
+            return ptic->OnKeyUp(wParam, lParam);
     }
     break;
 
@@ -213,17 +242,38 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
     }
     break;
 
-    case WM_IME_SETCONTEXT: /* UNUSED */
+    case WM_IME_SETCONTEXT:
     {
         /**
          * 按照微软文档的说法，如果自行绘制合成文本，则应该清除 ISC_SHOWUICOMPOSITIONWINDOW 标记，
          * 以便隐藏 IMM 自带的合成文本窗口。
+         *
          * 但是根据实际测试，自带的合成文本窗口仅在 WM_IME_STARTCOMPOSITION 消息返回 0 时隐藏。
+         *
          * 造成这个结果的原因未知。
+         *
+         * 建议保留微软建议做法。
+         *
+         * 不建议程序使用系统自带的合成文本窗口，因为它的样式实在太丑了。
+         */
+        /**
+         * According to the Microsoft documentation, if you are drawing composition string
+         * yourself, you should clear the ISC_SHOUWUICOMPOSITIONWINDOW tag to hide the
+         * composition string window that comes with IMM.
+         *
+         * However, according to actual testing, the built-in composition string window is
+         * only hidden when the WM_IME_STARTCOMPOSITION message returns 0.
+         *
+         * The reason for this result is unknown.
+         *
+         * It is recommended to keep Microsoft's suggested approach.
+         *
+         * It is not recommended for the program to use the system's built-in composition
+         * string window, as its style is too ugly.
          */
 
         // printc(CCFA "WM_IME_SETCONTEXT");
-        // return DefWindowProc(hWnd, message, wParam, lParam & ~ISC_SHOWUICOMPOSITIONWINDOW);
+        return DefWindowProc(hWnd, message, wParam, lParam & ~ISC_SHOWUICOMPOSITIONWINDOW);
     }
     break;
 
@@ -232,14 +282,42 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
         if (wParam == IMN_OPENCANDIDATE)
         {
             /**
-             * 当程序接收到该通知时，应该使用 ImmSetCandidateWindow() 重新定位候选窗口。
+             * 当程序接收到该通知时，应该使用 ImmSetCandidateWindow 重新定位候选窗口，但不是必须的。
              *
-             * 注意：在本示例中，总是通过主动地更新候选窗口的位置，不理会该通知。
+             * 注意：部分输入法不会在显示候选窗口前发送该通知。
+             *
+             * 注意：在本示例中，总是主动更新候选窗口的位置，不理会该请求。
              *
              * 参考：https://learn.microsoft.com/en-us/windows/win32/intl/imn-opencandidate
              */
+            /**
+             * When the program receives the notification, it should use ImmSetCandidateWindow
+             * to reposition the candidate window, but this is not necessary.
+             *
+             * Note: Some IME will not send this notification before displaying the candidate
+             * window.
+             *
+             * Note: In this example, the position of the candidate window is always actively
+             * updated, ignoring the request.
+             *
+             * Reference:
+             * https://learn.microsoft.com/en-us/windows/win32/intl/imn-opencandidate
+             */
 
-            // printc(CCFA "WM_IME_NOTIFY: IMN_OPENCANDIDATE");
+            printc(CCFR "WM_IME_NOTIFY: IMN_OPENCANDIDATE");
+        }
+
+        if (wParam == IMN_SETCANDIDATEPOS)
+        {
+            /**
+             * 此时不能调用 ImmSetCandidateWindow，否则会导致无限循环。
+             */
+            /**
+             * In this case, the program cannot call ImmSetCandidateWindow, otherwise it will
+             * cause an infinite loop.
+             */
+
+            // printc(CCFR "WM_IME_NOTIFY: IMN_SETCANDIDATEPOS");
         }
     }
     break;
@@ -249,17 +327,33 @@ LRESULT CALLBACK TextEditor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
         if (wParam == IMR_QUERYCHARPOSITION)
         {
             /**
-             * 但程序接收到该请求时，应该将请求的字符位置写入到 lParam 指向的 IMECHARPOSITION 结构中。
+             * 当程序接收到该请求时，应该将请求的字符位置写入到 lParam 指向的 IMECHARPOSITION 结构中。
              * 输入法会根据写入的位置重新定位候选窗口。
              * 如果没有修改 IMECHARPOSITION 结构，则输入法会保持候选窗口的位置。
-             * 此时程序不能调用 ImmSetCandidateWindow() 设置候选窗口位置，否则会导致无限循环。
              *
-             * 注意：在本示例中，总是通过主动地更新候选窗口的位置，不理会该请求。
+             * 在该情求中程序不能调用 ImmSetCandidateWindow，否则会导致无限循环。
+             *
+             * 注意：在本示例中，总是主动更新候选窗口的位置，不理会该请求。
              *
              * 参考：https://learn.microsoft.com/en-us/windows/win32/intl/imr-querycharposition
              */
+            /**
+             * When the program receives the request, it should write the requested character
+             * position into the IMECHARPOSITION structure pointed to by lParam.
+             * If the IMECHARPOSITION structure is not modified, the IME will maintain the
+             * position of the candidate window.
+             *
+             * In this case, the program cannot call ImmSetCandidateWindow, otherwise it will
+             * cause an infinite loop.
+             *
+             * Note: In this example, the position of the candidate window is always actively
+             * updated, ignoring the request.
+             *
+             * Reference:
+             * https://learn.microsoft.com/en-us/windows/win32/intl/imr-querycharposition
+             */
 
-            // printc(CCFA "WM_IME_REQUEST: IMR_QUERYCHARPOSITION");
+            // printc(CCFR "WM_IME_REQUEST: IMR_QUERYCHARPOSITION");
         }
     }
     break;
@@ -333,9 +427,11 @@ LRESULT TextEditor::OnSetFocus(WPARAM wParam, LPARAM lParam)
 
     ImmAssociateContextEx(m_hwnd, NULL, IACE_DEFAULT);
 
+    /* 创建并显示系统光标 */
     /* Create and show system caret. */
     UpdateCandidateWindowPos();
 
+    /* 绘制光标 */
     /* Draw cursor. */
     UpdateUI();
 
@@ -353,6 +449,14 @@ LRESULT TextEditor::OnKillFocus(WPARAM wParam, LPARAM lParam)
      * - IMM 会自动强制完成合成。
      * - 窗口的输入法启停状态不影响新的焦点窗口的输入法启停状态。
      */
+    /**
+     * If you are using Direct UI, force complete or cancel composition when the input
+     * box loses focus, and then disable the IME.
+     *
+     * If you are using Lagacy UI, nothing need to do, because:
+     * - IMM will automatically force complete composition.
+     * - The status of the IME will control by the new focus window.
+     */
 
     // HIMC himc = ImmGetContext(m_hwnd);
     // if (himc)
@@ -362,9 +466,11 @@ LRESULT TextEditor::OnKillFocus(WPARAM wParam, LPARAM lParam)
     // }
     // ImmAssociateContextEx(m_hwnd, NULL, 0);
 
+    /* 销毁系统光标 */
     /* Destroy system caret. */
     DestroyCaret();
 
+    /* 擦除光标 */
     /* Erase cursor. */
     UpdateUI();
 
@@ -374,9 +480,8 @@ LRESULT TextEditor::OnKillFocus(WPARAM wParam, LPARAM lParam)
 LRESULT TextEditor::OnKeyDown(WPARAM wParam, LPARAM lParam)
 {
     {
-        /**
-         * 下面的代码仅用于输出调试信息。
-         */
+        /* 下面的代码仅用于输出调试信息 */
+        /* The following code is only used to output debugging information. */
 
         wchar_t key_name[256] = L"??";
         GetKeyNameTextW(lParam, (LPWSTR)&key_name, 256);
@@ -392,6 +497,7 @@ LRESULT TextEditor::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
         printc(CCFA "WM_KEYDOWN: \"%ls\" (0x%X)%s", key_name, original_key,
                (wParam == VK_PROCESSKEY ? " [VK_PROCESSKEY]" : ""));
+        printc(CCFY "  GetKeyState(vk) [repeated]: %s", (GetKeyState(original_key) & 0x80) ? "True" : "False");
     }
 
     if (wParam == VK_PROCESSKEY)
@@ -413,6 +519,13 @@ LRESULT TextEditor::OnKeyDown(WPARAM wParam, LPARAM lParam)
         RemoveText(1);
         break;
     }
+
+    return 0;
+}
+
+LRESULT TextEditor::OnKeyUp(WPARAM wParam, LPARAM lParam)
+{
+    // nothing to do in this example
 
     return 0;
 }
@@ -453,9 +566,8 @@ LRESULT TextEditor::OnIMECompositionStart(WPARAM wParam, LPARAM lParam)
 LRESULT TextEditor::OnIMEComposition(WPARAM wParam, LPARAM lParam)
 {
     {
-        /**
-         * 下面的代码仅用于输出调试信息。
-         */
+        /* 下面的代码仅用于输出调试信息 */
+        /* The following code is only used to output debugging information. */
 
         printc(CCFA "WM_IME_COMPOSITION");
 
@@ -597,7 +709,8 @@ LRESULT TextEditor::OnIMEComposition(WPARAM wParam, LPARAM lParam)
             printc(CCZ0 "    GCS_COMPREADCLAUSE");
         }
 
-        // 没有发现哪个输入法会使用该特性
+        /* 好像不处理这两种情况也完全没有问题 */
+        /* It seems that there is no problem not dealing with these two situations.  */
         if (lParam & CS_INSERTCHAR)
         {
             printc(CCFY "    CS_INSERTCHAR");
@@ -624,8 +737,6 @@ LRESULT TextEditor::OnIMEComposition(WPARAM wParam, LPARAM lParam)
         {
             m_cursor_pos = m_comp_end_pos;
             RemoveText(m_comp_str_size_e);
-            m_comp_start_pos = 0;
-            m_comp_end_pos = 0;
 
             free(m_comp_str);
             m_comp_str = NULL;
@@ -644,6 +755,8 @@ LRESULT TextEditor::OnIMEComposition(WPARAM wParam, LPARAM lParam)
             m_comp_clauses_size_e = 0;
         }
         m_comp_cursor_pos = 0;
+        m_comp_start_pos = 0;
+        m_comp_end_pos = 0;
 
         if (lParam & GCS_RESULTSTR)
         {
@@ -662,7 +775,8 @@ LRESULT TextEditor::OnIMEComposition(WPARAM wParam, LPARAM lParam)
         if ((lParam & GCS_COMPSTR))
         {
             LONG comp_str_size_b = ::ImmGetCompositionString(himc, GCS_COMPSTR, NULL, 0);
-            // 当取消合成时，获取得到的合成字符串就是空的。
+            /* 有时合成字符串就是个空字符串 */
+            /* Sometime the compostion string is an empty string. */
             if (comp_str_size_b != 0)
             {
                 LPWSTR comp_str = (LPWSTR)malloc(comp_str_size_b);
@@ -717,20 +831,8 @@ LRESULT TextEditor::OnIMECompositionEnd(WPARAM wParam, LPARAM lParam)
 
     if (m_comp_str)
     {
-        /* { */
-        /**
-         * 这段代码目前主要应对旧版韩语输入法。
-         * 旧版韩语输入法在完成合成时，会将最后的 WM_IME_COMPOSITION 消息放到 WM_IME_ENDCOMPOSITION 之后，
-         * 而不是之前，导致之前插入到文本中的临时合成文本没有被正确清除，会导致多余的字符产生。
-         * 为此在 WM_IME_ENDCOMPOSITION 时需要确保临时合成文本被删除。
-         */
-
         m_cursor_pos = m_comp_end_pos;
         RemoveText(m_comp_str_size_e);
-        m_comp_start_pos = 0;
-        m_comp_end_pos = 0;
-
-        /* } */
 
         free(m_comp_str);
         m_comp_str = NULL;
@@ -749,6 +851,8 @@ LRESULT TextEditor::OnIMECompositionEnd(WPARAM wParam, LPARAM lParam)
         m_comp_clauses_size_e = 0;
     }
     m_comp_cursor_pos = 0;
+    m_comp_start_pos = 0;
+    m_comp_end_pos = 0;
 
     return 0;
 }
@@ -760,43 +864,55 @@ void TextEditor::UpdateCandidateWindowPos()
     printc("UpdateCandidateWindowPos");
 
     /**
-     * 在以下情况应该及时更新候选窗口的位置：
-     * - 如果当前处于非合成状态，则当游标改变时更新候选窗口位置；
-     * - 如果当前处于合成状态，则当 WM_IME_COMPOSITION 处理完毕时更新候选窗口位置。
-     * - 控件在激活之时需要更新候选窗口的位置。这样做有两个原因：
-     *   - 系统光标是全局资源，
-     *     因此其它控件激活时，可能已经修改系统光标的位置，
-     *     所以控件激活时需要重新定位候选窗口，确保系统光标的位置正确。
-     *     控件失活时应该销毁系统光标，否则系统光标会一直显示。
-     *   - 对于 Direct UI 框架下的控件，他们共用同一个窗口，
-     *     因此其它控件激活时，可能已经修改候选窗口的位置，
-     *     所以控件激活时需要重新定位候选窗口，确保候选窗口的位置正确。
-     *     控件失活时无需更新候选窗口的位置。
-     *
-     * 注意：不要使用系统光标作为文本光标，
-     * 因为系统光标用来帮助某些输入法定位候选窗口位置，
-     * 而候选窗口的位置和文本光标的位置有时不在同一个位置。
-     *
-     * Update candidate window position in this situation:
-     * - If not compositing:
-     *   - After cursor changed.
-     * - If compositing:
-     *   - After composition updated. (WM_IME_COMPOSITION)
-     *
-     * Note: Do not use the system caret as the text cursor,
-     * because the system caret use as the anchor of the candidate window for some IME,
-     * in some situation, the position of text cursor and system caret is different.
+     * 如果在合成时发生了窗口焦点转移，窗口会在 WM_KILLFOCUS 消息后才收到 WM_IME_COMPOSITION 消息。
+     * 而处理 WM_IME_COMPOSITION 消息时可能会调用 UpdateCandidateWindowPos。
+     * 在窗口失去焦点时调用 UpdateCandidateWindowPos 没有意义，因此这里要排除这种情况。
      */
-
     /**
-     * 当在合成时发生窗口焦点转移时，当前窗口会在 WM_KILLFOCUS 消息后收到 WM_IME_COMPOSITION 消息。
-     * 系统光标已经在 WM_KILLFOCUS 销毁，但是在处理 WM_IME_COMPOSITION 消息时可能会重新显示系统光标，
-     * 因此在此处需要判断当前窗口是否获得焦点，如果获得焦点才创建系统光标。
+     * When there is an ongoing composition, and the focus is transfered, The window will
+     * receive the WM_IME_COMPOSITION after the WM_KILLFOCUS message.
+     * And when processing the WM_IME_COMPOSITION message, it may call UpdateCandidateWindowPos.
+     * Calling UpdateCandidateWindowPos when the window loses focus is meaningless,
+     * so this situation needs to be excluded here.
      */
     if (GetFocus() != m_hwnd)
     {
         return;
     }
+
+    /**
+     * “目标” 一般指拥有 ATTR_TARGET_NOTCONVERTED 或 ATTR_TARGET_CONVERTED 属性的字符。
+     * 拥有这些属性的字符总是连续的。
+     * 
+     * 一般只有日语和部分繁体中文输入法会产生 ATTR_TARGET_XXX 属性，
+     * 所以对于其它输入法而言，“目标” 是不存在的。
+     * 
+     * 这没有什么问题，但是实际上其它输入法也是存在 “目标” 的。
+     * 它们的目标可以从候选窗口的位置观察到。
+     * 并且候选窗口总是对齐到目标的开头。
+     * 
+     * 为了实现相同的效果，添加了一些额外的规则来计算其它输入法的 “目标”：
+     * 1. 如果输入法产生 `GCS_COMPCLAUSE` 信息，则使用合成光标（`GCS_CURSORPOS`）所在的子句作为目标。
+     *    这个规则主要适用于部分中文输入法。
+     * 2. 否则，将整个合成文本视作目标。
+     */
+    /**
+     * The "Target" originally referred to the characters which have the ATTR_TARGET_NOTCONVERTED or
+     * ATTR_TARGET_CONVERTED attribute. That characters are always continuous.
+     *
+     * Usually only Japanese and some Traditional Chinese IMEs generate that attribute.
+     * So there will be no "Target" in other IMEs.
+     *
+     * It is OK, but in reality there is "Target" in other IMEs.
+     * We can observe the "Target" through the position of the candidate window.
+     * Usually their candidate window align to the start of "Target".
+     * 
+     * To achieve the same effect, some rules have been added here to calculate
+     * the "Target" of other IMEs:
+     * 1. If IME generate `GCS_COMPCLAUSE`, use the clause that includes `GCS_CURSORPOS` as the target.
+     *    This mainly applies to some Chinese IMEs.
+     * 2. Otherwire, we treat whole composition string as a target.
+     */
 
     HIMC himc = ImmGetContext(m_hwnd);
     if (himc)
@@ -817,14 +933,6 @@ void TextEditor::UpdateCandidateWindowPos()
         }
         else
         {
-            /**
-             * 如果存在转换目标（ATTR_TARGET_XXX），
-             * 则将候选窗口对齐到转换目标的开头。
-             * 否则如果存在分句且数量在两个及以上，
-             * 则将候选你窗口对齐到光标所在的分句的开头（用于模拟TSF下输入法？？？？。
-             * 否则候选窗口对齐到合成文本的开头。
-             */
-
             int target_pos = -1;
 
             if (m_comp_attrs)
@@ -839,7 +947,7 @@ void TextEditor::UpdateCandidateWindowPos()
                 }
             }
 
-            if (target_pos == -1 && m_comp_clauses && (m_comp_clauses_size_e - 1) >= 2)
+            if (target_pos == -1 && m_comp_clauses)
             {
                 if (m_comp_cursor_pos == m_comp_clauses[m_comp_clauses_size_e - 1])
                 {
@@ -877,14 +985,18 @@ void TextEditor::UpdateCandidateWindowPos()
         DestroyCaret();
         CreateCaret(m_hwnd, NULL, 1, rc_anchor.bottom - rc_anchor.top);
         SetCaretPos(rc_anchor.left, rc_anchor.top);
+
+        /* 用于可视化候选窗口的锚点，仅用于调试。 */
         /* Visualizing the position of anchor points in debuging. */
         ShowCaret(m_hwnd);
+
+        ImmReleaseContext(m_hwnd, himc);
     }
-    ImmReleaseContext(m_hwnd, himc);
 }
 
 // ------------------------------------------------------------
 // 布局渲染
+// Layout and Render
 
 void TextEditor::UpdateLayout()
 {
@@ -911,7 +1023,8 @@ bool TextEditor::Layout(HDC hdc)
 {
     // printc("Layout");
 
-    /* Clean. */
+    /* 清除之前的布局数据 */
+    /* Clean */
 
     if (m_lines)
     {
@@ -927,6 +1040,7 @@ bool TextEditor::Layout(HDC hdc)
     m_lines = NULL;
     m_line_count = 0;
 
+    /* 计算行数，只支持"LF"作为行尾标记的行 */
     /* Count Line, only supports 'LF'. */
 
     int line_count = 0;
@@ -967,7 +1081,8 @@ bool TextEditor::Layout(HDC hdc)
             }
         }
 
-        // The last charactor is '\n'.
+        /* 文本的最后一个字符是 '\n' */
+        /* The last charactor is '\n'. */
         if (m_text_size != 0 && m_text[m_text_size - 1] == (WCHAR)'\n')
         {
             line_count++;
@@ -978,6 +1093,7 @@ bool TextEditor::Layout(HDC hdc)
     memset(m_lines, 0, line_count * sizeof(LINEINFO));
     m_line_count = line_count;
 
+    /* 将文本转为以行为单位的数据 */
     /* Count character of each line. */
 
     if (m_text_size == 0)
@@ -1032,6 +1148,7 @@ bool TextEditor::Layout(HDC hdc)
         }
     }
 
+    /* 获取每个字符的边界框 */
     /* Get the rectangle of each characters. */
 
     TEXTMETRIC tm;
@@ -1136,7 +1253,8 @@ BOOL TextEditor::Render(HDC hdc)
     co.x = 0;
     co.y = 0;
 
-    // 绘制文本
+    /* 绘制文本 */
+    /* Draw text */
 
     for (UINT i = 0; i < m_line_count; i++)
     {
@@ -1150,7 +1268,8 @@ BOOL TextEditor::Render(HDC hdc)
         co.y += m_line_height;
     }
 
-    // 绘制光标
+    /* 绘制光标 */
+    /* Draw cursor */
 
     if (GetFocus() == m_hwnd)
     {
@@ -1178,7 +1297,8 @@ BOOL TextEditor::Render(HDC hdc)
         SelectObject(hdc, hpenOrg);
     }
 
-    // 绘制合成文本下划线
+    /* 绘制合成文本下划线 */
+    /* Draw compostion string underline */
 
     for (UINT i = 0; i < m_line_count; i++)
     {
@@ -1277,6 +1397,7 @@ HPEN TextEditor::CreateUnderlinePen(BYTE attr, int width)
 
 // ------------------------------------------------------------
 // 文本操作
+// Text operations
 
 BOOL TextEditor::InsertText(LPWSTR text, UINT text_size)
 {

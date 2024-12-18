@@ -1,0 +1,233 @@
+IME：微软日语输入法 / Microsoft Japanese IME
+
+Website: 
+https://support.microsoft.com/en-us/windows/microsoft-japanese-ime-da40471d-6b91-4042-ae8b-713a96476916
+https://learn.microsoft.com/en-us/globalization/input/japanese-ime
+
+Language: 日本语 / Japanese
+
+Sample：春が来た  (はるがきた)
+
+Key Order：h a r u g a k i t a
+
+Log：
+
+===== KEY: [H] =====
+
+WM_KEYDOWN: "H" (0x48) [VK_PROCESSKEY]
+WM_IME_STARTCOMPOSITION
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [ｈ]
+    GCS_CURSORPOS: 1
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [ｈ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+    GCS_COMPREADSTR
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [は]
+    GCS_CURSORPOS: 1
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 1
+      [00]: ATTR_INPUT [は]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 1
+    GCS_COMPREADSTR
+
+===== KEY: [R] =====
+
+WM_KEYDOWN: "R" (0x52) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はｒ]
+    GCS_CURSORPOS: 2
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 2
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [ｒ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 2
+    GCS_COMPREADSTR
+
+===== KEY: [U] =====
+
+WM_KEYDOWN: "U" (0x55) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はる]
+    GCS_CURSORPOS: 2
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 2
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 2
+    GCS_COMPREADSTR
+
+===== KEY: [G] =====
+
+WM_KEYDOWN: "G" (0x47) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるｇ]
+    GCS_CURSORPOS: 3
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 3
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [ｇ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 3
+    GCS_COMPREADSTR
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるが]
+    GCS_CURSORPOS: 3
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 3
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [が]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 3
+    GCS_COMPREADSTR
+
+===== KEY: [K] =====
+
+WM_KEYDOWN: "K" (0x4B) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるがｋ]
+    GCS_CURSORPOS: 4
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 4
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [が]
+      [03]: ATTR_INPUT [ｋ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 4
+    GCS_COMPREADSTR
+
+===== KEY: [I] =====
+
+WM_KEYDOWN: "I" (0x49) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるがき]
+    GCS_CURSORPOS: 4
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 4
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [が]
+      [03]: ATTR_INPUT [き]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 4
+    GCS_COMPREADSTR
+
+===== KEY: [T] =====
+
+WM_KEYDOWN: "T" (0x54) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるがきｔ]
+    GCS_CURSORPOS: 5
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 5
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [が]
+      [03]: ATTR_INPUT [き]
+      [04]: ATTR_INPUT [ｔ]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 5
+    GCS_COMPREADSTR
+
+===== KEY: [A] =====
+
+WM_KEYDOWN: "A" (0x41) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [はるがきた]
+    GCS_CURSORPOS: 5
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 5
+      [00]: ATTR_INPUT [は]
+      [01]: ATTR_INPUT [る]
+      [02]: ATTR_INPUT [が]
+      [03]: ATTR_INPUT [き]
+      [04]: ATTR_INPUT [た]
+    GCS_COMPCLAUSE: 1 + 1
+      [00]: 0
+      [01]: 5
+    GCS_COMPREADSTR
+
+===== KEY: [Space] =====
+
+WM_KEYDOWN: "Space" (0x20) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [春が来た]
+    GCS_CURSORPOS: 0
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 4
+      [00]: ATTR_TARGET_CONVERTED [春]
+      [01]: ATTR_TARGET_CONVERTED [が]
+      [02]: ATTR_CONVERTED [来]
+      [03]: ATTR_CONVERTED [た]
+    GCS_COMPCLAUSE: 2 + 1
+      [00]: 0
+      [01]: 2
+      [02]: 4
+    GCS_COMPREADSTR
+
+===== KEY: [Right Arrow] =====
+
+WM_KEYDOWN: "Right" (0x27) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1B9
+    GCS_COMPSTR: [春が来た]
+    GCS_CURSORPOS: 2
+    GCS_DELTASTART: 0
+    GCS_COMPATTR: 4
+      [00]: ATTR_CONVERTED [春]
+      [01]: ATTR_CONVERTED [が]
+      [02]: ATTR_TARGET_CONVERTED [来]
+      [03]: ATTR_TARGET_CONVERTED [た]
+    GCS_COMPCLAUSE: 2 + 1
+      [00]: 0
+      [01]: 2
+      [02]: 4
+    GCS_COMPREADSTR
+
+===== KEY: [Enter] =====
+
+WM_KEYDOWN: "Enter" (0xD) [VK_PROCESSKEY]
+WM_IME_COMPOSITION
+  lParam: 0x1E00
+    GCS_RESULTSTR: [春が来た]
+    GCS_RESULTCLAUSE
+    GCS_RESULTREADSTR
+    GCS_RESULTREADCLAUSE
+WM_IME_ENDCOMPOSITION

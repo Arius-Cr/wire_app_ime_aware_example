@@ -14,7 +14,7 @@
 
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 
-    <!-- 🔻 自定内容 -->
+    <!-- 🔻 自定内容 (Custom Content) -->
 
     <PropertyGroup Label="Configuration">
         <!-- VS2015 ToolsVersion="14.0" PlatformToolset v140-->
@@ -34,11 +34,11 @@
         <OutDir>.\build\$(Platform)\$(Configuration)\</OutDir>
     </PropertyGroup>
 
-    <!-- 🔺 自定内容 -->
+    <!-- 🔺 自定内容 (Custom Content) -->
 
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 
-    <!-- 🔻 自定内容 -->
+    <!-- 🔻 自定内容 (Custom Content) -->
 
     <ItemDefinitionGroup>
         <ClCompile>
@@ -81,7 +81,7 @@
         <Message Text="Project Dir = $(MSBuildProjectDirectory)" />
     </Target>
 
-    <!-- 🔺 自定内容 -->
+    <!-- 🔺 自定内容 (Custom Content) -->
 
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
